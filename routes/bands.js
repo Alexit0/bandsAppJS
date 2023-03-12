@@ -2,14 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Bands = require("../db/bands");
 
-const bandToTitleCase = (bandName) => {
-  return bandName
-    .replace("_", " ")
-    .toLowerCase()
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-};
+const { bandToTitleCase } = require("../utils/helper");
+const { AuthMiddleware } = require("../utils/auth");
+const { isValidText } = require("../utils/validation");
 
 router.get("", async (req, res) => {
   const bands = await Bands.getAllBands();
@@ -29,7 +24,11 @@ router.get("/band/:band", async (req, res) => {
   res.send(results);
 });
 
+router.use(AuthMiddleware);
+
 router.post("/band/new", async (req, res) => {
+  console.log(req.token)
+  
   const results = await Bands.addBand(
     req.body.name,
     req.body.year_formed,
@@ -40,8 +39,8 @@ router.post("/band/new", async (req, res) => {
 });
 
 router.put("/:band", async (req, res) => {
-  const results = await Bands.udpateBand()
-})
+  const results = await Bands.udpateBand();
+});
 
 router.delete("/:band", async (req, res) => {
   const results = await Bands.deleteBand(req.params.band);
