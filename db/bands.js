@@ -21,8 +21,8 @@ function getBand(name) {
     .select("name", "year_formed", "country_of_origin");
 }
 
-function deleteBand(name) {
-  return knex("bands").where("name", name).del();
+function deleteBand(id) {
+  return knex("bands").where("name", id).del();
 }
 
 function getLineUp(band) {

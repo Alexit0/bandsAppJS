@@ -28,8 +28,8 @@ router.get("/band/:band", async (req, res) => {
 router.use(AuthMiddleware);
 
 router.post("/band/new", async (req, res) => {
-  console.log(req.token)
-  
+  console.log(req.token);
+
   const results = await Bands.addBand(
     req.body.name,
     req.body.year_formed,
@@ -43,9 +43,9 @@ router.put("/:band", async (req, res) => {
   const results = await Bands.udpateBand();
 });
 
-router.delete("/:band", async (req, res) => {
-  const results = await Bands.deleteBand(req.params.band);
-  res.send(`The band ${req.params.band} was removed from database`);
+router.delete("band/:id", async (req, res) => {
+  const results = await Bands.deleteBand(req.params.id);
+  res.send(`The band ${req.params.id} was removed from database`);
 });
 
 module.exports = router;
