@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 
 const bandsRoutes = require("./routes/bands");
 const musiciansRoutes = require("./routes/musicians");
+const instrumentsRoutes = require("./routes/instruments");
 const authRoutes = require("./routes/auth");
 
 app.use(bodyParser.json());
@@ -26,6 +27,7 @@ app.use(
 
 app.use(authRoutes);
 app.use("/musicians", musiciansRoutes);
+app.use('/instruments', instrumentsRoutes);
 app.use("/", bandsRoutes);
 
 app.listen(5000, () =>

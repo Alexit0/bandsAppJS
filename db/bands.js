@@ -7,25 +7,27 @@ function addBand(name, country, year) {
   ]);
 }
 
-// function udpateBand(name, newName, country, year) {
-//   return knex("bands")
-//     .where({ name: name })
-//     .update({ name: name, country_of_origin: country, year_formed: year });
-// }
+function udpateBand(id, name, country, year) {
+  return knex("bands")
+    .where({ id: id })
+    .update({ name: name, country_of_origin: country, year_formed: year });
+}
+
 function getAllBands() {
   return knex("bands").select();
 }
-function getBand(name) {
+
+function getBand(id) {
   return knex("bands")
-    .where("name", name)
+    .where("id", id)
     .select("name", "year_formed", "country_of_origin");
 }
 
 function deleteBand(id) {
-  return knex("bands").where("name", id).del();
+  return knex("bands").where("id", id).del();
 }
 
-function getLineUp(band) {
+function getLineUp(id) {
   return knex("band_mus_inst")
     .join("bands", "band_mus_inst.band_id", "=", "bands.id")
     .join("musicians", "band_mus_inst.musician_id", "=", "musicians.id")
@@ -33,9 +35,12 @@ function getLineUp(band) {
     .select(
       "musicians.first_name as First_Name",
       "musicians.last_name as Last_Name",
-      "instruments.name as Instrument"
+      "instruments.name as Instrument", 
+      "bands.name as Band_Name",
+      "bands.country_of_origin as Country_Of_Origin",
+      "bands.year_formed as Year_Formed"
     )
-    .where("bands.name", band);
+    .where("bands.id", id);
 }
 module.exports = {
   addBand,
@@ -43,5 +48,5 @@ module.exports = {
   getBand,
   deleteBand,
   getLineUp,
-//   udpateBand
+  udpateBand
 };

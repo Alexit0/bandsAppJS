@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const Musicians = require("../db/musicians");
-const { route } = require("./bands");
+
+const { AuthMiddleware } = require("../utils/auth");
 
 router.get("", async (req, res) => {
   const musicians = await Musicians.getAllMusicians();
@@ -13,6 +14,8 @@ router.get("/:id", async (req, res) => {
   const musician = await Musicians.getMusician(req.params.id);
   res.send(musician[0]);
 });
+
+router.use(AuthMiddleware);
 
 router.patch("/:id", async (req, res) => {
   const data = req.body;

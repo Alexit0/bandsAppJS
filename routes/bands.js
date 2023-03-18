@@ -3,8 +3,8 @@ const router = express.Router();
 
 const Bands = require("../db/bands");
 
-const { bandToTitleCase } = require("../utils/helper");
 const { AuthMiddleware } = require("../utils/auth");
+const { bandToTitleCase } = require("../utils/helper");
 const { isValidText } = require("../utils/validation");
 
 router.get("", async (req, res) => {
@@ -12,40 +12,43 @@ router.get("", async (req, res) => {
   res.json({ bands });
 });
 
-router.get("/:band", async (req, res) => {
-  const bandName = req.params.band;
-  const results = await Bands.getBand(bandToTitleCase(bandName));
-  console.log(req.params.band);
+router.get("/:id", async (req, res) => {
+  const bandId = req.params.id;
+  const results = await Bands.getBand(bandToTitleCase(bandId));
   res.send(results);
 });
 
 router.get("/band/:band", async (req, res) => {
   const results = await Bands.getLineUp(bandToTitleCase(req.params.band));
-  console.log(req.params);
   res.send(results);
 });
 
 router.use(AuthMiddleware);
 
-router.post("/band/new", async (req, res) => {
-  console.log(req.token);
+router.patch("/band/:id", async (req, res) => {
+  const id = req.params.id
+  const results = await Bands.udpateBand(
+    id,
+    req.body.name,
+    req.body.country_of_origin,
+    req.body.year_formed
+  );
+  res.send({value: results});
+});
 
+router.post("/band/new", async (req, res) => {
   const results = await Bands.addBand(
     req.body.name,
-    req.body.year_formed,
-    req.body.country_of_origin
+    req.body.country_of_origin,
+    req.body.year_formed
   );
-  console.log(req.body);
   res.send(results);
 });
 
-router.put("/:band", async (req, res) => {
-  const results = await Bands.udpateBand();
-});
-
-router.delete("band/:id", async (req, res) => {
-  const results = await Bands.deleteBand(req.params.id);
-  res.send(`The band ${req.params.id} was removed from database`);
+router.delete("/band/:id", async (req, res) => {
+  const id = req.params.id;
+  await Bands.deleteBand(id);
+  res.send(`The band ${id} was removed from database`);
 });
 
 module.exports = router;
