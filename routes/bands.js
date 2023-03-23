@@ -26,14 +26,14 @@ router.get("/band/:band", async (req, res) => {
 router.use(AuthMiddleware);
 
 router.patch("/band/:id", async (req, res) => {
-  const id = req.params.id
+  const id = req.params.id;
   const results = await Bands.udpateBand(
     id,
     req.body.name,
     req.body.country_of_origin,
     req.body.year_formed
   );
-  res.send({value: results});
+  res.send({ value: results });
 });
 
 router.post("/band/new", async (req, res) => {
@@ -49,6 +49,13 @@ router.delete("/band/:id", async (req, res) => {
   const id = req.params.id;
   await Bands.deleteBand(id);
   res.send(`The band ${id} was removed from database`);
+});
+
+router.patch("/band/:id/update", async (req, res) => {
+  const id = req.params.id;
+
+  await Bands.updateLineUp(id, req.body);
+  res.send(`The band ${id} was updated`);
 });
 
 module.exports = router;

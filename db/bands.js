@@ -33,14 +33,30 @@ function getLineUp(id) {
     .join("musicians", "band_mus_inst.musician_id", "=", "musicians.id")
     .join("instruments", "band_mus_inst.instrument_id", "=", "instruments.id")
     .select(
+      "musicians.id as Musician_Id",
       "musicians.first_name as First_Name",
       "musicians.last_name as Last_Name",
-      "instruments.name as Instrument", 
+      "instruments.id as Instrument_Id",
+      "instruments.name as Instrument",
+      "bands.id as Band_Id",
       "bands.name as Band_Name",
       "bands.country_of_origin as Country_Of_Origin",
       "bands.year_formed as Year_Formed"
     )
     .where("bands.id", id);
+}
+
+async function updateLineUp(bandId, data) {
+  try {
+    await knex.transaction(async (trx) => {
+      await trx("band_mus_inst").where("band_id", bandId).del();
+      console.log(`Lineup ${bandId} was removed.`);
+      await trx("band_mus_inst").insert([...data]);
+    });
+  } catch (error) {
+    console.error(error);
+    console.log(error);
+  }
 }
 module.exports = {
   addBand,
@@ -48,5 +64,6 @@ module.exports = {
   getBand,
   deleteBand,
   getLineUp,
-  udpateBand
+  udpateBand,
+  updateLineUp,
 };
