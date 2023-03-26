@@ -1,3 +1,4 @@
+const morgan = require("morgan");
 const express = require("express");
 const cors = require("cors");
 
@@ -17,6 +18,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(morgan("dev"));
+
 app.use(express.json());
 
 app.use(
@@ -27,8 +30,14 @@ app.use(
 
 app.use(authRoutes);
 app.use("/musicians", musiciansRoutes);
-app.use('/instruments', instrumentsRoutes);
+app.use("/instruments", instrumentsRoutes);
 app.use("/", bandsRoutes);
+
+app.use((error, req, res, next) => {
+  const status = error.status || 500;
+  const message = error.message || "Something went wrong..";
+  res.status(status).json({ message: message });
+});
 
 app.listen(5000, () =>
   console.log(`\n *** Server is running on port 5000*** \n`)

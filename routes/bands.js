@@ -4,18 +4,29 @@ const router = express.Router();
 const Bands = require("../db/bands");
 
 const { AuthMiddleware } = require("../utils/auth");
+const { CustomError } = require("../utils/errors");
 const { bandToTitleCase } = require("../utils/helper");
 const { isValidText } = require("../utils/validation");
 
-router.get("", async (req, res) => {
-  const bands = await Bands.getAllBands();
-  res.json({ bands });
+router.get("", async (req, res, next) => {
+  try {
+    const bands = await Bands.getAllBands();
+    res.json({ bands });
+  } catch (error) {
+    next(new CustomError("Could not fetch data."));
+  }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req, res, next) => {
   const bandId = req.params.id;
-  const results = await Bands.getBand(bandToTitleCase(bandId));
-  res.send(results);
+  try {
+    const results = await Bands.getBand(bandToTitleCase(bandId));
+    if (results.length === 0) {
+      next(new CustomError("Invalid band index."));
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.get("/band/:band", async (req, res) => {
