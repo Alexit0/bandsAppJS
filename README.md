@@ -1,9 +1,8 @@
-backend of bandsApp
+<h1>BandsApp (back-end)</h1> 
 
 
-node v18.15.0
-<!-- install dependencies -->
-npm install
+Using node v18.15.0, sqlite 3.41.1
 
-<!-- run server -->
-npm start
+To install dependencies: npm install
+
+To start the server: npm start
