@@ -18,9 +18,9 @@ router.get("", async (req, res, next) => {
 });
 
 router.get("/:id", async (req, res, next) => {
-  const bandId = req.params.id;
+  const id = req.params.id;
   try {
-    const results = await Bands.getBand(bandToTitleCase(bandId));
+    const results = await Bands.getBand(bandToTitleCase(id));
     if (results.length === 0) {
       return next(
         new CustomError("Could not find any band with the id " + bandId, 404)
@@ -46,14 +46,20 @@ router.use(AuthMiddleware);
 
 router.patch("/band/:id", async (req, res) => {
   const id = req.params.id;
+  const name = req.body.name;
+  const year = req.body.year_formed;
+  const country = req.body.country_of_origin;
 
   let errors = {};
 
-  if (!isValidText(req.body.name)) {
+  if (!isValidText(name)) {
     errors.name = "Invalid band's name.";
   }
-  if (!isValidYear(req.body.year_formed)) {
-    errors.year = "Invalid year";
+  if (!isValidYear(year)) {
+    errors.year = "Invalid year.";
+  }
+  if (!isValidText(country)) {
+    errors.country = "Invalid country. If country unknown select 'unknown'.";
   }
 
   if (Object.keys(errors).length > 0) {
@@ -64,38 +70,66 @@ router.patch("/band/:id", async (req, res) => {
   }
 
   try {
-    const results = await Bands.udpateBand(
-      id,
-      req.body.name,
-      req.body.country_of_origin,
-      req.body.year_formed
-    );
+    const results = await Bands.udpateBand(id, name, country, year);
     res.send({ message: "Details were updated.", value: results });
   } catch (error) {
     next(error);
   }
 });
 
-router.post("/band/new", async (req, res) => {
-  const results = await Bands.addBand(
-    req.body.name,
-    req.body.country_of_origin,
-    req.body.year_formed
-  );
-  res.send(results);
+router.post("/band/new", async (req, res, next) => {
+  const id = req.params.id;
+  const name = req.body.name;
+  const year = req.body.year_formed;
+  const country = req.body.country_of_origin;
+
+  let errors = {};
+
+  if (!isValidText(name)) {
+    errors.name = "Invalid band's name.";
+  }
+  if (!isValidYear(year)) {
+    errors.year = "Invalid year.";
+  }
+  if (!isValidText(country)) {
+    errors.country = "Invalid country. If country unknown select 'unknown'.";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return res.status(422).json({
+      message: "Adding the band failed due to validation errors.",
+      errors,
+    });
+  }
+
+  try {
+    const results = await Bands.addBand(name, country, year);
+    res.send(results);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.delete("/band/:id", async (req, res) => {
   const id = req.params.id;
-  await Bands.deleteBand(id);
-  res.send(`The band ${id} was removed from database`);
+
+  try {
+    await Bands.deleteBand(id);
+    res.send(`The band ${id} was removed from database`);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.patch("/band/:id/update", async (req, res) => {
   const id = req.params.id;
 
-  await Bands.updateLineUp(id, req.body);
-  res.send(`The band ${id} was updated`);
+  try {
+    await Bands.updateLineUp(id, req.body);
+    res.send(`The band ${id} was updated`);
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;
