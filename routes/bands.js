@@ -30,9 +30,13 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.get("/band/:band", async (req, res) => {
+router.get("/band/:id", async (req, res, next) => {
+  const bandId = req.params.id;
   try {
-    const results = await Bands.getLineUp(bandToTitleCase(req.params.band));
+    const results = await Bands.getLineUp(bandToTitleCase(bandId));
+    if (results.length === 0) {
+      return next(new CustomError("Invalid band index."));
+    }
     res.send(results);
   } catch (error) {
     next(error);
