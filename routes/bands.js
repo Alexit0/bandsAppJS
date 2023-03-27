@@ -24,14 +24,19 @@ router.get("/:id", async (req, res, next) => {
     if (results.length === 0) {
       next(new CustomError("Invalid band index."));
     }
+    res.send(results);
   } catch (error) {
     next(error);
   }
 });
 
 router.get("/band/:band", async (req, res) => {
-  const results = await Bands.getLineUp(bandToTitleCase(req.params.band));
-  res.send(results);
+  try {
+    const results = await Bands.getLineUp(bandToTitleCase(req.params.band));
+    res.send(results);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.use(AuthMiddleware);
