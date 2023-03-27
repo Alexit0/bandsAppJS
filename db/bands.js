@@ -1,18 +1,6 @@
 const knexConfig = require("./knexfile");
 const knex = require("knex")(knexConfig.development);
 
-function addBand(name, country, year) {
-  return knex("bands").insert([
-    { name: name, country_of_origin: country, year_formed: year },
-  ]);
-}
-
-function udpateBand(id, name, country, year) {
-  return knex("bands")
-    .where({ id: id })
-    .update({ name: name, country_of_origin: country, year_formed: year });
-}
-
 function getAllBands() {
   return knex("bands").select();
 }
@@ -22,11 +10,6 @@ function getBand(id) {
     .where("id", id)
     .select("name", "year_formed", "country_of_origin");
 }
-
-function deleteBand(id) {
-  return knex("bands").where("id", id).del();
-}
-
 function getLineUp(id) {
   return knex("band_mus_inst")
     .join("bands", "band_mus_inst.band_id", "=", "bands.id")
@@ -45,6 +28,23 @@ function getLineUp(id) {
     )
     .where("bands.id", id);
 }
+function addBand(name, country, year) {
+  return knex("bands").insert([
+    { name: name, country_of_origin: country, year_formed: year },
+  ]);
+}
+
+function udpateBand(id, name, country, year) {
+  return knex("bands")
+    .where({ id: id })
+    .update({ name: name, country_of_origin: country, year_formed: year });
+}
+
+function deleteBand(id) {
+  return knex("bands").where("id", id).del();
+}
+
+
 
 async function updateLineUp(bandId, data) {
   try {

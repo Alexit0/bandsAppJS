@@ -7,8 +7,9 @@ function isValidEmail(value) {
 }
 
 function isValidYear(value) {
-  return;
+  return +value && value % 1 == 0 && value > 1900 && value < 2099;
 }
 
 exports.isValidText = isValidText;
 exports.isValidEmail = isValidEmail;
+exports.isValidYear = isValidYear;
